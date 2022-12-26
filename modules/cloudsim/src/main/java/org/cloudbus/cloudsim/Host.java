@@ -9,6 +9,7 @@ package org.cloudbus.cloudsim;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.lists.PeList;
@@ -273,6 +274,38 @@ public class Host {
 			setStorage(getStorage() + vm.getSize());
 		}
 		getVmList().clear();
+	}
+
+	/**
+	 * Performs state transfer for VM being migrated (finalizing pre-copy live migration)
+	 * @param transferredVm - VM whose state should be updated
+	 */
+
+	public void transferVmState(Vm transferredVm) {
+		Optional<Vm> dirtyVm = getVmList()
+				.stream()
+				.filter(vm -> vm.getId() == transferredVm.getId())
+				.findFirst();
+
+		if (!dirtyVm.isPresent()) {
+			throw new IllegalArgumentException("VM " + transferredVm.getId() + " not present. Cannot transfer VM state");
+		}
+
+		Vm vm = dirtyVm.get();
+
+		Log.printLine("Transferring VM state. vmId=" + vm.getId());
+
+		vm.setCloudletScheduler(transferredVm.getCloudletScheduler());
+		vm.setCurrentAllocatedSize(transferredVm.getCurrentAllocatedSize());
+		vm.setCurrentAllocatedRam(transferredVm.getCurrentAllocatedRam());
+		vm.setCurrentAllocatedBw(transferredVm.getCurrentAllocatedBw());
+
+		Log.printLine("Resuming VM on new host. vmId=" + vm.getId() + ", hostId=" + vm.getHost().getId());
+		//TODO jak ponownie wystartować VM na nowej maszynie? przeciwieństwo host.vmDestroy(vm)?
+
+		vm.setInPause(false);
+		vm.setInMigration(false);
+
 	}
 
 	/**
