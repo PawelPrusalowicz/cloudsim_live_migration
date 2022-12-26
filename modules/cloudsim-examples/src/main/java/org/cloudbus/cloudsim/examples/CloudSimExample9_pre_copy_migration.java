@@ -117,21 +117,11 @@ public class CloudSimExample9_pre_copy_migration {
 			//Fifth step - PRE-COPY MIGRATION
 
 
-			//Create VM that will be migrated
-//			SimEvent eventCreate = new SimEvent(SimEvent.SEND, 1.0, 1, 0, VM_CREATE, vm1);
-//			datacenter0.processEvent(eventCreate);
-
 			//TODO create copy VM mechanism
 			Vm vmCopy = new Vm(0, brokerId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerTimeShared());
 			vmCopy.setHost(datacenter0.getHostList().get(0));
 			CloudSim.send(datacenter0.getId(), datacenter0.getId(), 0, VM_CREATE,  vm1);
-
-
-			//Create vm copy and send it to destination host
-
-//			Vm vmCopy = new Vm(vm1.getId(), brokerId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerTimeShared());
-//			vmCopy.setHost(vm1.getHost());
-
+			
 
 			Map<String, Object> migrate = new HashMap<>();
 			migrate.put("vmCopy", vmCopy);
