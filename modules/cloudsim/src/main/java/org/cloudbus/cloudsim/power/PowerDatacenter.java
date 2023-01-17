@@ -126,7 +126,7 @@ public class PowerDatacenter extends Datacenter {
 						send(
 								getId(),
 								vm.getRam() / ((double) targetHost.getBw() / (2 * 8000)),
-								CloudSimTags.VM_MIGRATE,
+								CloudSimTags.VM_INITIATE_PRE_COPY_MIGRATION,
 								migrate);
 					}
 				}

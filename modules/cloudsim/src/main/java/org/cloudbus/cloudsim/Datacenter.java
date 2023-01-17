@@ -576,10 +576,10 @@ public class Datacenter extends SimEntity {
 		@SuppressWarnings("unchecked")
 		Map<String, Object> migrate = (HashMap<String, Object>) tmp;
 
-		Vm vm = (Vm) migrate.get("vmCopy");
-		Host host = (Host) migrate.get("migrationDestinationHost");
+		Vm vm = (Vm) migrate.get("vm");
+		Host host = (Host) migrate.get("host");
 
-		Log.printLine("START - PRE-COPY MIGRATING VM " + vm.getId() + " from host " + vm.getHost().getId() +
+		Log.printLine(CloudSim.clock() + "\" : START - PRE-COPY MIGRATING VM " + vm.getId() + " from host " + vm.getHost().getId() +
 				" to host " + host.getId() + ". Reserving resources and creating VM.");
 
 
@@ -633,10 +633,10 @@ public class Datacenter extends SimEntity {
 		Map<String, Object> migrate = (HashMap<String, Object>) tmp;
 
 
-		Vm vm = (Vm) migrate.get("vmSource");
+		Vm vm = (Vm) migrate.get("vm");
 		Host host = vm.getHost();
 
-		Log.printLine("Deallocating VM on source host before final migration. vmId = " + vm.getId());
+		Log.printLine("Deallocating VM on source host " + host.getId() + " before final migration. vmId = " + vm.getId());
 		//TODO jak wstrzymać VM? host.vmDestroy(vm);?
 
 		getVmAllocationPolicy().deallocateHostForVm(vm);
@@ -664,8 +664,8 @@ public class Datacenter extends SimEntity {
 		@SuppressWarnings("unchecked")
 		Map<String, Object> migrate = (HashMap<String, Object>) tmp;
 
-		Vm vm = (Vm) migrate.get("vmSource");
-		Host host = (Host) migrate.get("migrationDestinationHost");
+		Vm vm = (Vm) migrate.get("vm");
+		Host host = (Host) migrate.get("host");
 
 
 		//transfer state to destination server (CPU, registers, VM memory)
