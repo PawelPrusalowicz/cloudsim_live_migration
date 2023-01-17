@@ -126,6 +126,13 @@ public abstract class VmScheduler {
 	 * @post $none
 	 */
 	public List<Double> getAllocatedMipsForVm(Vm vm) {
+		if (vm.isInMigration()){
+			 List <Double>allocatedMips = new ArrayList<Double>();
+			 for(Double val: getMipsMap().get(vm.getUid())){
+				 allocatedMips.add(0.0);
+			 }
+			 return allocatedMips;
+		}
 		return getMipsMap().get(vm.getUid());
 	}
 
