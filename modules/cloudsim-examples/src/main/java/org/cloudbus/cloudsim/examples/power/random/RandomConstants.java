@@ -14,7 +14,7 @@ package org.cloudbus.cloudsim.examples.power.random;
  */
 public class RandomConstants {
 
-    public final static int NUMBER_OF_VMS = 200;
+    public final static int NUMBER_OF_VMS = 20;
 
     public final static int NUMBER_OF_HOSTS = NUMBER_OF_VMS;
 
