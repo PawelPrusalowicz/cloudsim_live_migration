@@ -223,6 +223,21 @@ public class CloudSimTags {
 	public static final int VM_MIGRATE = BASE + 35;
 
 	/**
+	 * Denotes a request to initiate pre-copy migration of a VM in a {@link Datacenter}.
+	 */
+	public static final int VM_INITIATE_PRE_COPY_MIGRATION = BASE + 49;
+
+	/**
+	 * Denotes a request to confirm pre-copy migration initiation of a VM in a {@link Datacenter}.
+	 */
+	public static final int VM_CONFIRM_PRE_COPY_MIGRATION_INITIATION = BASE + 50;
+
+	/**
+	 * Denotes a request to finish pre-copy migration of a VM in a {@link Datacenter}.
+	 */
+	public static final int VM_FINALIZE_PRE_COPY_MIGRATION = BASE + 55;
+
+	/**
 	 * Denotes a request to migrate a new VM in a {@link Datacenter}  
          * with acknowledgement information sent by the Datacener.
 	 */
