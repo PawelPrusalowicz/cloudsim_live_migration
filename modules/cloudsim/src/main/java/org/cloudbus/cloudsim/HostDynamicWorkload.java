@@ -74,6 +74,10 @@ public class HostDynamicWorkload extends Host {
 		for (Vm vm : getVmList()) {
 			double totalRequestedMips = vm.getCurrentRequestedTotalMips();
 			double totalAllocatedMips = getVmScheduler().getTotalAllocatedMipsForVm(vm);
+			if(vm.getHost() == null){
+				// vm is in transition state
+				continue;
+			}
 
 			if (!Log.isDisabled()) {
 				Log.formatLine(

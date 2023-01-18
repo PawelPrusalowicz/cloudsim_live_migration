@@ -110,14 +110,15 @@ public class PowerDatacenter extends Datacenter {
         Map<String, Object> migrate = (HashMap<String, Object>) tmp;
 
         PowerVm vmOriginal = (PowerVm) migrate.get("vm");
-        PowerVm vm = (PowerVm) vmOriginal.clone();
+        vmOriginal.setInMigration(true);
+        PowerVm vmCopy = (PowerVm) vmOriginal.clone();
         Host host = (Host) migrate.get("host");
 
         Log.printLine(CloudSim.clock() + "\" : START - PRE-COPY MIGRATING VM " + vmOriginal.getId() + " from host " + vmOriginal.getHost().getId() +
                 " to host " + host.getId() + ". Reserving resources and creating VM.");
 
 
-        boolean result = getVmAllocationPolicy().allocateHostForVm(vm, host);
+        boolean result = getVmAllocationPolicy().allocateHostForVm(vmCopy, host);
         if (!result) {
             Log.printLine("[Datacenter.processVmMigrate] VM allocation to the destination host failed");
             System.exit(0);
@@ -127,7 +128,7 @@ public class PowerDatacenter extends Datacenter {
         if (ack) {
             int[] data = new int[3];
             data[0] = getId();
-            data[1] = vm.getId();
+            data[1] = vmCopy.getId();
 
             if (result) {
                 data[2] = CloudSimTags.TRUE;
@@ -138,16 +139,16 @@ public class PowerDatacenter extends Datacenter {
         }
 
 
-        Log.printLine("SEND MIGRATION CONFIRMATION WITH TIME OFFSET of VM " + vmOriginal.getId() + " to host " + vmOriginal.getHost().getId());
+        Log.printLine(CloudSim.clock() + ": SEND MIGRATION CONFIRMATION WITH TIME OFFSET of VM #" + vmOriginal.getId() + " to host #" + vmOriginal.getHost().getId());
 
 
         Map<String, Object> migrationElements = new HashMap<String, Object>();
         migrationElements.put("host", host);
         migrationElements.put("vmOriginal", vmOriginal);
-        migrationElements.put("vmCopy", vm);
+        migrationElements.put("vmCopy", vmCopy);
         send(
                 getId(),
-                vm.getRam() / ((double) host.getBw() / (2 * 8000)),
+                vmOriginal.getRam() / ((double) host.getBw() / (2 * 8000)),
                 CloudSimTags.VM_CONFIRM_PRE_COPY_MIGRATION_INITIATION,
                 migrationElements);
 
@@ -170,18 +171,20 @@ public class PowerDatacenter extends Datacenter {
         Map<String, Object> migrate = (HashMap<String, Object>) tmp;
 
 
-        PowerVm vm = (PowerVm) migrate.get("vmOriginal");
-        Host host = vm.getHost();
+        PowerVm vmOriginal = (PowerVm) migrate.get("vmOriginal");
+        PowerVm vmCopy= (PowerVm) migrate.get("vmCopy");
+        Host host = vmOriginal.getHost();
 
-        Log.printLine("Deallocating VM on source host " + host.getId() + " before final migration. vmId = " + vm.getId());
+        Log.printLine("Deallocating VM on source host " + host.getId() + " before final migration. vmId = " + vmOriginal.getId());
         //TODO jak wstrzymać VM? host.vmDestroy(vm);?
+        send(
+                getId(),
+                0,
+                CloudSimTags.VM_DESTROY,
+                vmOriginal);
 
-        getVmAllocationPolicy().deallocateHostForVm(vm);
-        host.vmDestroy(vm);
-        host.removeMigratingInVm(vm);
 
-
-        Log.printLine("Sending finalize pre-copy migration request. vmId = " + vm.getId());
+        Log.printLine("Sending finalize pre-copy migration request. vmId = " + vmOriginal.getId());
 
         send(
                 getId(),
@@ -203,6 +206,7 @@ public class PowerDatacenter extends Datacenter {
         Map<String, Object> migrate = (HashMap<String, Object>) tmp;
 
         Vm vm = (Vm) migrate.get("vmCopy");
+        Vm vmorg = (Vm) migrate.get("vmOriginal");
         Host host = (Host) migrate.get("host");
         if(vm.getId() == 8){
             int x = 0;
@@ -271,7 +275,7 @@ public class PowerDatacenter extends Datacenter {
                                     targetHost.getId());
                         }
 
-                        targetHost.addMigratingInVm(vm);
+//                        targetHost.addMigratingInVm(vm);
                         incrementMigrationCount();
 
                         /** VM migration delay = RAM / bandwidth **/

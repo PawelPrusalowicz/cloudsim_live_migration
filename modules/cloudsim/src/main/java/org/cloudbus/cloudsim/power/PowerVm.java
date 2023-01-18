@@ -17,6 +17,7 @@ import org.cloudbus.cloudsim.VmStateHistoryEntry;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.util.MathUtil;
 
+
 /**
  * A class of VM that stores its CPU utilization percentage history. The history is used by VM allocation
  * and selection policies.
@@ -35,6 +36,8 @@ import org.cloudbus.cloudsim.util.MathUtil;
  * @since CloudSim Toolkit 2.0
  */
 public class PowerVm extends Vm {
+
+    int NUMBER_OF_VM_MACHINES = 200;
 
     /**
      * The Constant HISTORY_LENGTH.
@@ -222,13 +225,9 @@ public class PowerVm extends Vm {
         this.schedulingInterval = schedulingInterval;
     }
 
-    public void resetId() {
-        setId(getId() - 50);
-    }
-
     @Override
     public Object clone() {
-        PowerVm vm = new PowerVm(getId(), getUserId(), getMips(), getNumberOfPes(), getRam(),
+        PowerVm vm = new PowerVm(getId() +NUMBER_OF_VM_MACHINES , getUserId(), getMips(), getNumberOfPes(), getRam(),
                 getBw(), getSize(), 0, getVmm(), getCloudletScheduler(), getSchedulingInterval());
         for (double histRecord : getUtilizationHistory()) {
             vm.addUtilizationHistoryValue(histRecord);
@@ -236,6 +235,7 @@ public class PowerVm extends Vm {
         for (VmStateHistoryEntry histRecord : getStateHistory()) {
             vm.addStateHistoryEntry(histRecord.getTime(), histRecord.getAllocatedMips(), histRecord.getRequestedMips(), histRecord.isInMigration());
         }
+        vm.setInPause(true);
         return vm;
     }
 
