@@ -301,7 +301,6 @@ public class Host {
 		vm.setCurrentAllocatedBw(transferredVm.getCurrentAllocatedBw());
 
 		Log.printLine("Resuming VM on new host. vmId=" + vm.getId() + ", hostId=" + vm.getHost().getId());
-		//TODO jak ponownie wystartować VM na nowej maszynie? przeciwieństwo host.vmDestroy(vm)?
 
 		vm.setInPause(false);
 		vm.setInMigration(false);

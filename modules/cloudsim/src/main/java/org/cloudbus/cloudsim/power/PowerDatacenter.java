@@ -176,7 +176,6 @@ public class PowerDatacenter extends Datacenter {
         Host host = vmOriginal.getHost();
 
         Log.printLine("Deallocating VM on source host " + host.getId() + " before final migration. vmId = " + vmOriginal.getId());
-        //TODO jak wstrzymać VM? host.vmDestroy(vm);?
         send(
                 getId(),
                 0,
@@ -186,11 +185,15 @@ public class PowerDatacenter extends Datacenter {
 
         Log.printLine("Sending finalize pre-copy migration request. vmId = " + vmOriginal.getId());
 
+        Map<String, Object> migrationElements = new HashMap<String, Object>();
+        migrationElements.put("host", vmCopy.getHost());
+        migrationElements.put("vmOriginal", vmOriginal);
+        migrationElements.put("vmCopy", vmCopy);
         send(
                 getId(),
                 0,
                 CloudSimTags.VM_FINALIZE_PRE_COPY_MIGRATION,
-                tmp);
+                migrationElements);
 
     }
 
@@ -206,12 +209,7 @@ public class PowerDatacenter extends Datacenter {
         Map<String, Object> migrate = (HashMap<String, Object>) tmp;
 
         Vm vm = (Vm) migrate.get("vmCopy");
-        Vm vmorg = (Vm) migrate.get("vmOriginal");
         Host host = (Host) migrate.get("host");
-        if(vm.getId() == 8){
-            int x = 0;
-        }
-
 
         //transfer state to destination server (CPU, registers, VM memory)
         host.transferVmState(vm);

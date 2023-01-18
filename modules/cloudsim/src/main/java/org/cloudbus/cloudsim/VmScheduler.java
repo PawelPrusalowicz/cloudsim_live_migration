@@ -126,6 +126,17 @@ public abstract class VmScheduler {
 	 * @post $none
 	 */
 	public List<Double> getAllocatedMipsForVm(Vm vm) {
+		// if machine paused, its mips are unavailable
+		if (vm.isInPause() || vm.getHost() == null){
+			List <Double>allocatedMips = new ArrayList<Double>();
+			if(getMipsMap().get(vm.getUid()) == null){
+				return null;
+			}
+			for(Double val: getMipsMap().get(vm.getUid())){
+				allocatedMips.add(0.0);
+			}
+			return allocatedMips;
+		}
 		return getMipsMap().get(vm.getUid());
 	}
 
