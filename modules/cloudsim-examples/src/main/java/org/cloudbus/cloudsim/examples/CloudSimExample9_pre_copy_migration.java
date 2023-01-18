@@ -53,7 +53,7 @@ import static org.cloudbus.cloudsim.core.CloudSimTags.VM_INITIATE_PRE_COPY_MIGRA
 public class CloudSimExample9_pre_copy_migration {
 
 	/** The cloudlet list. */
-	private static List<Cloudlet> cloudletList;
+	private static ArrayList<Cloudlet> cloudletList = new ArrayList<>();
 
 	/** The vmlist. */
 	private static List<Vm> vmlist;
@@ -107,11 +107,15 @@ public class CloudSimExample9_pre_copy_migration {
 
 			Cloudlet cloudlet1 = new Cloudlet(id, length, pesNumber, fileSize, outputSize, utilizationModel, utilizationModel, utilizationModel);
 			cloudlet1.setUserId(brokerId);
+			cloudletList.add(cloudlet1);
 
 			Cloudlet cloudlet2 = new Cloudlet(id, length, pesNumber, fileSize, outputSize, utilizationModel, utilizationModel, utilizationModel);
 			cloudlet2.setUserId(brokerId);
+			cloudletList.add(cloudlet2);
+
 
 			//TODO dodac cloudlety do VM
+//			broker.submitCloudletList(cloudletList);
 
 
 			//Fifth step - PRE-COPY MIGRATION

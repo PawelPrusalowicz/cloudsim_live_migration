@@ -236,17 +236,17 @@ public class Datacenter extends SimEntity {
 				processVmMigrate(ev, true);
 				break;
 
-			case CloudSimTags.VM_INITIATE_PRE_COPY_MIGRATION:
-				processInitiateVmPreCopyMigration(ev, false);
-				break;
-
-			case CloudSimTags.VM_CONFIRM_PRE_COPY_MIGRATION_INITIATION:
-				processConfirmVmPreCopyMigrationInitiation(ev, false);
-				break;
-
-			case CloudSimTags.VM_FINALIZE_PRE_COPY_MIGRATION:
-				processFinalizeVmPreCopyMigration(ev, false);
-				break;
+//			case CloudSimTags.VM_INITIATE_PRE_COPY_MIGRATION:
+//				processInitiateVmPreCopyMigration(ev, false);
+//				break;
+//
+//			case CloudSimTags.VM_CONFIRM_PRE_COPY_MIGRATION_INITIATION:
+//				processConfirmVmPreCopyMigrationInitiation(ev, false);
+//				break;
+//
+//			case CloudSimTags.VM_FINALIZE_PRE_COPY_MIGRATION:
+//				processFinalizeVmPreCopyMigration(ev, false);
+//				break;
 
 			case CloudSimTags.VM_DATA_ADD:
 				processDataAdd(ev, false);
@@ -566,112 +566,112 @@ public class Datacenter extends SimEntity {
 	}
 
 
-	private void processInitiateVmPreCopyMigration(SimEvent ev, boolean ack) {
-		Object tmp = ev.getData();
-		if (!(tmp instanceof Map<?, ?>)) {
-			throw new ClassCastException("The data object must be Map<String, Object>");
-		}
-
-
-		@SuppressWarnings("unchecked")
-		Map<String, Object> migrate = (HashMap<String, Object>) tmp;
-
-		Vm vm = (Vm) migrate.get("vmCopy");
-		Host host = (Host) migrate.get("migrationDestinationHost");
-
-		Log.printLine("START - PRE-COPY MIGRATING VM " + vm.getId() + " from host " + vm.getHost().getId() +
-				" to host " + host.getId() + ". Reserving resources and creating VM.");
-
-
-		boolean result = getVmAllocationPolicy().allocateHostForVm(vm, host);
-		if (!result) {
-			Log.printLine("[Datacenter.processVmMigrate] VM allocation to the destination host failed");
-			System.exit(0);
-		}
-
-
-		if (ack) {
-			int[] data = new int[3];
-			data[0] = getId();
-			data[1] = vm.getId();
-
-			if (result) {
-				data[2] = CloudSimTags.TRUE;
-			} else {
-				data[2] = CloudSimTags.FALSE;
-			}
-			sendNow(ev.getSource(), CloudSimTags.VM_CREATE_ACK, data);
-		}
-
-
-		Log.printLine("SEND MIGRATION CONFIRMATION WITH TIME OFFSET of VM " + vm.getId() + " to host " + vm.getHost().getId());
-
-
-		send(
-				getId(),
-				vm.getRam() / ((double) host.getBw() / (2 * 8000)),
-				CloudSimTags.VM_CONFIRM_PRE_COPY_MIGRATION_INITIATION,
-				tmp);
-
-
-		Log.formatLine(
-				"%.2f: Pre-copy migration Initialization of VM #%d to Host #%d is completed",
-				CloudSim.clock(),
-				vm.getId(),
-				host.getId());
-	}
-
-
-	private void processConfirmVmPreCopyMigrationInitiation(SimEvent ev, boolean b) {
-		Object tmp = ev.getData();
-		if (!(tmp instanceof Map<?, ?>)) {
-			throw new ClassCastException("The data object must be Map<String, Object>");
-		}
-
-
-		@SuppressWarnings("unchecked")
-		Map<String, Object> migrate = (HashMap<String, Object>) tmp;
-
-
-		Vm vm = (Vm) migrate.get("vmSource");
-		Host host = vm.getHost();
-
-		Log.printLine("Deallocating VM on source host before final migration. vmId = " + vm.getId());
-		//TODO jak wstrzymać VM? host.vmDestroy(vm);?
-
-		getVmAllocationPolicy().deallocateHostForVm(vm);
-		host.removeMigratingInVm(vm);
-
-
-		Log.printLine("Sending finalize pre-copy migration request. vmId = " + vm.getId());
-
-		send(
-				getId(),
-				0,
-				CloudSimTags.VM_FINALIZE_PRE_COPY_MIGRATION,
-				tmp);
-
-	}
-
-	private void processFinalizeVmPreCopyMigration(SimEvent ev, boolean b) {
-
-		Object tmp = ev.getData();
-		if (!(tmp instanceof Map<?, ?>)) {
-			throw new ClassCastException("The data object must be Map<String, Object>");
-		}
-
-
-		@SuppressWarnings("unchecked")
-		Map<String, Object> migrate = (HashMap<String, Object>) tmp;
-
-		Vm vm = (Vm) migrate.get("vmSource");
-		Host host = (Host) migrate.get("migrationDestinationHost");
-
-
-		//transfer state to destination server (CPU, registers, VM memory)
-		host.transferVmState(vm);
-
-	}
+//	private void processInitiateVmPreCopyMigration(SimEvent ev, boolean ack) {
+//		Object tmp = ev.getData();
+//		if (!(tmp instanceof Map<?, ?>)) {
+//			throw new ClassCastException("The data object must be Map<String, Object>");
+//		}
+//
+//
+//		@SuppressWarnings("unchecked")
+//		Map<String, Object> migrate = (HashMap<String, Object>) tmp;
+//
+//		Vm vm = (Vm) migrate.get("vm");
+//		Host host = (Host) migrate.get("host");
+//
+//		Log.printLine(CloudSim.clock() + "\" : START - PRE-COPY MIGRATING VM " + vm.getId() + " from host " + vm.getHost().getId() +
+//				" to host " + host.getId() + ". Reserving resources and creating VM.");
+//
+//
+//		boolean result = getVmAllocationPolicy().allocateHostForVm(vm, host);
+//		if (!result) {
+//			Log.printLine("[Datacenter.processVmMigrate] VM allocation to the destination host failed");
+//			System.exit(0);
+//		}
+//
+//
+//		if (ack) {
+//			int[] data = new int[3];
+//			data[0] = getId();
+//			data[1] = vm.getId();
+//
+//			if (result) {
+//				data[2] = CloudSimTags.TRUE;
+//			} else {
+//				data[2] = CloudSimTags.FALSE;
+//			}
+//			sendNow(ev.getSource(), CloudSimTags.VM_CREATE_ACK, data);
+//		}
+//
+//
+//		Log.printLine("SEND MIGRATION CONFIRMATION WITH TIME OFFSET of VM " + vm.getId() + " to host " + vm.getHost().getId());
+//
+//
+//		send(
+//				getId(),
+//				vm.getRam() / ((double) host.getBw() / (2 * 8000)),
+//				CloudSimTags.VM_CONFIRM_PRE_COPY_MIGRATION_INITIATION,
+//				tmp);
+//
+//
+//		Log.formatLine(
+//				"%.2f: Pre-copy migration Initialization of VM #%d to Host #%d is completed",
+//				CloudSim.clock(),
+//				vm.getId(),
+//				host.getId());
+//	}
+//
+//
+//	private void processConfirmVmPreCopyMigrationInitiation(SimEvent ev, boolean b) {
+//		Object tmp = ev.getData();
+//		if (!(tmp instanceof Map<?, ?>)) {
+//			throw new ClassCastException("The data object must be Map<String, Object>");
+//		}
+//
+//
+//		@SuppressWarnings("unchecked")
+//		Map<String, Object> migrate = (HashMap<String, Object>) tmp;
+//
+//
+//		Vm vm = (Vm) migrate.get("vm");
+//		Host host = vm.getHost();
+//
+//		Log.printLine("Deallocating VM on source host " + host.getId() + " before final migration. vmId = " + vm.getId());
+//		//TODO jak wstrzymać VM? host.vmDestroy(vm);?
+//
+//		getVmAllocationPolicy().deallocateHostForVm(vm);
+//		host.removeMigratingInVm(vm);
+//
+//
+//		Log.printLine("Sending finalize pre-copy migration request. vmId = " + vm.getId());
+//
+//		send(
+//				getId(),
+//				0,
+//				CloudSimTags.VM_FINALIZE_PRE_COPY_MIGRATION,
+//				tmp);
+//
+//	}
+//
+//	private void processFinalizeVmPreCopyMigration(SimEvent ev, boolean b) {
+//
+//		Object tmp = ev.getData();
+//		if (!(tmp instanceof Map<?, ?>)) {
+//			throw new ClassCastException("The data object must be Map<String, Object>");
+//		}
+//
+//
+//		@SuppressWarnings("unchecked")
+//		Map<String, Object> migrate = (HashMap<String, Object>) tmp;
+//
+//		Vm vm = (Vm) migrate.get("vm");
+//		Host host = (Host) migrate.get("host");
+//
+//
+//		//transfer state to destination server (CPU, registers, VM memory)
+//		host.transferVmState(vm);
+//
+//	}
 
 	/**
 	 * Processes a Cloudlet based on the event type.
